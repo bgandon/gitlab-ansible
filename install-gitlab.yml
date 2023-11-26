@@ -1,0 +1,6 @@
+---
+
+- name: GitLab | is installed
+  hosts: gitlab
+  roles:
+    - gitlab

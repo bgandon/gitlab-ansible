@@ -1,0 +1,23 @@
+---
+
+- name: GitLab CE | vars for community edition are set
+  ansible.builtin.include_tasks: set-ce-edition.yml
+  when: gitlab_edition == 'community'
+  tags: [ gitlab ]
+
+- name: GitLab EE | vars for enterprise edition are set
+  ansible.builtin.include_tasks: set-ee-edition.yml
+  when: gitlab_edition == 'enterprise'
+  tags: [ gitlab ]
+
+- name: GitLab | pre-tasks are imported
+  ansible.builtin.import_tasks: install-prerequisites.yml
+  tags: [ gitlab ]
+
+- name: GitLab | Yum repo is setup
+  ansible.builtin.import_tasks: setup-gitlab-repo.yml
+  tags: [ gitlab ]
+
+- name: GitLab | GitLab is installed
+  ansible.builtin.import_tasks: install-gitlab.yml
+  tags: [ gitlab ]

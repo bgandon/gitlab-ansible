@@ -1,0 +1,52 @@
+---
+
+- name: GitLab | prerequisites are installed
+  become: true
+  ansible.builtin.yum:
+    name: "{{ package }}"
+    state: installed
+  loop_control: { loop_var: package }
+  loop:
+    - yum-utils
+    - policycoreutils
+    - openssh-server
+    - openssh-clients
+    - postfix
+  register: yum_packages_state
+
+# With Alma/Rocky/RHEL, in the default Postfix config, 'inet_interfaces = localhost'
+# refers in /etc/hosts to both IPv4 127.0.0.1 and IPv6 ::1, but the latter
+# makes Postfix fail to start
+- name: GitLab | Postfix is listening on IPv4 localhost only
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: ^inet_interfaces\s+=
+    line: inet_interfaces = 127.0.0.1
+    state: present
+
+- name: GitLab | services are started and enabled
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ service }}"
+    enabled: true
+    state: started
+  loop_control: { loop_var: service }
+  loop:
+    - sshd
+    - postfix
+  when:
+    - yum_packages_state.changed
+
+# With Alma/Rocky/RHEL, firewalld is enabled by default and forbids any
+# traffic except SSH. Equivalent CLI commands:
+#   - firewall-cmd --permanent --zone=public --add-service=https
+#   - firewall-cmd --reload
+- name: GitLab | permit traffic in default zone for https service
+  ansible.posix.firewalld:
+    service: "{{ service }}"
+    permanent: true
+    state: enabled
+  loop_control: { loop_var: service }
+  loop:
+    - http
+    - https

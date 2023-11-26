@@ -1,0 +1,7 @@
+---
+MD012: # Multiple consecutive blank lines [Expected: 1; Actual: 2]
+  maximum: 3
+MD003: # Heading style [Expected: setext; Actual: atx]
+  style: setext_with_atx
+MD038: false # Spaces inside code span elements
+MD046: false # Code block style [Expected: indented; Actual: fenced]

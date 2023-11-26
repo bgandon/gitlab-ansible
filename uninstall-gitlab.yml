@@ -1,0 +1,26 @@
+---
+
+- name: GitLab | is completely uninstalled
+  hosts: gitlab
+  tasks:
+    - name: GitLab | processes are stopped
+      become: true
+      ansible.builtin.command: gitlab-ctl stop
+
+    - name: GitLab | files are uninstalled
+      become: true
+      ansible.builtin.command: gitlab-ctl uninstall
+
+    - name: GitLab | remaining configs are removed
+      become: true
+      ansible.builtin.command: gitlab-ctl cleanse
+
+    - name: GitLab | user accounts are removed
+      become: true
+      ansible.builtin.command: gitlab-ctl remove-accounts
+
+    - name: GitLab | the all-in-one package is removed
+      become: true
+      ansible.builtin.package:
+        name: gitlab-ce
+        state: absent

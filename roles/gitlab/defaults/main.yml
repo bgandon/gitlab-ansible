@@ -1,0 +1,7 @@
+---
+
+gitlab_edition: community
+
+# Note: if you specify anything else than 443 for 'external_port', the
+#       provisioning of the Let's Encrypt certificate will fail.
+external_port: 443

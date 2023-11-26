@@ -1,0 +1,16 @@
+---
+all:
+  vars: {}
+
+gitlab:
+  hosts:
+    localhost:
+      ansible_user: vagrant
+      # ansible_password: <provide-a-value-if-necessary>
+      ansible_become: yes
+      # ansible_become_password: <provide-a-value-if-necessary>
+
+      # You may also specify the configuration values here:
+      # external_fqdn: gitlab.example.org
+      # gitlab_root_password: <provide-a-value-if-necessary>
+      # gitlab_admin_api_token: <provide-a-value-if-necessary>

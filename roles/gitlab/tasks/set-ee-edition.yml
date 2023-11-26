@@ -1,0 +1,5 @@
+---
+
+- name: GitLab EE | set EE vars
+  ansible.builtin.set_fact:
+    edition_abbreviation: ee

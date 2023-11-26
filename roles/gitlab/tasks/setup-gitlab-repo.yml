@@ -1,0 +1,18 @@
+---
+
+- name: GitLab | Yum repo file is rendered
+  become: true
+  ansible.builtin.template:
+    src: templates/gitlab.repo.j2
+    dest: /etc/yum.repos.d/gitlab_gitlab-{{ edition_abbreviation }}.repo
+    owner: root
+    group: root
+    mode: "0644"
+  register: yum_repo_file_state
+
+- name: GitLab | Yum cache is cleared
+  become: true
+  ansible.builtin.shell:
+    cmd: yum clean all
+  when:
+    - yum_repo_file_state.changed
