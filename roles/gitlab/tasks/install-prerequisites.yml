@@ -23,6 +23,7 @@
     regexp: ^inet_interfaces\s+=
     line: inet_interfaces = 127.0.0.1
     state: present
+  register: postfix_config_state
 
 - name: GitLab | services are started and enabled
   become: true
@@ -34,8 +35,7 @@
   loop:
     - sshd
     - postfix
-  when:
-    - yum_packages_state.changed
+  when: yum_packages_state.changed or postfix_config_state.changed
 
 # With Alma/Rocky/RHEL, firewalld is enabled by default and forbids any
 # traffic except SSH. Equivalent CLI commands:
