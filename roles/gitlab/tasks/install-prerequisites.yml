@@ -45,6 +45,7 @@
   ansible.posix.firewalld:
     service: "{{ service }}"
     permanent: true
+    immediate: true
     state: enabled
   loop_control: { loop_var: service }
   loop:
