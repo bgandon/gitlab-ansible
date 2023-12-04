@@ -17,5 +17,8 @@
   environment:
     EXTERNAL_URL: "https://{{ gitlab_external_fqdn }}:{{ gitlab_external_port }}"
     GITLAB_ROOT_PASSWORD: "{{ gitlab_root_password }}"
+
+    # # This works only for GitLab Docker image, not with the omnibus package:
+    # GITLAB_OMNIBUS_CONFIG: "letsencrypt['enable'] = false"
   notify:
     - setup_api_token

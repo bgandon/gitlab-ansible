@@ -13,6 +13,11 @@
       token.set_token('{{ gitlab_root_api_token }}');
       token.save!
       "
-  register: token_create_output
   listen:
     - setup_api_token
+
+- name: GitLab | app is reconfigured
+  ansible.builtin.command:
+    cmd: gitlab-ctl reconfigure
+  listen:
+    - restart_gitlab

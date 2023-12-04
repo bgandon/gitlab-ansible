@@ -7,3 +7,33 @@ gitlab_external_fqdn: ""
 # Note: if you specify anything else than 443 for 'external_port', the
 #       provisioning of the Let's Encrypt certificate will fail.
 gitlab_external_port: 443
+
+gitlab_time_zone: UTC # e.g. "Europe/Paris"
+
+gitlab_letsencrypt_enabled:                 false
+gitlab_letsencrypt_contact_emails:          [ "gitlab@example.com" ]
+gitlab_letsencrypt_auto_renew_enabled:      true
+gitlab_letsencrypt_auto_renew_hour:         1
+gitlab_letsencrypt_auto_renew_minute:       30
+gitlab_letsencrypt_auto_renew_day_of_month: "*/4"
+
+gitlab_backup_path:      /var/opt/gitlab/backups
+gitlab_backup_keep_time: 604800 # 7 days
+
+gitlab_email_enabled:      false
+gitlab_email_from:         "gitlab@example.com"
+gitlab_email_display_name: "Gitlab"
+gitlab_email_reply_to:     "gitlab@example.com"
+
+gitlab_smtp_enabled:              false
+gitlab_smtp_address:              "smtp.example.com"
+gitlab_smtp_port:                 465
+gitlab_smtp_user_name:            "smtp user"
+gitlab_smtp_password:             "smtp password"
+gitlab_smtp_domain:               "example.com"
+gitlab_smtp_authentication:       "login"
+gitlab_smtp_enable_starttls_auto: true
+gitlab_smtp_tls:                  false
+gitlab_smtp_openssl_verify_mode:  "none"
+gitlab_smtp_ca_path:              "/etc/ssl/certs"
+gitlab_smtp_ca_file:              "/etc/ssl/certs/ca-certificates.crt"

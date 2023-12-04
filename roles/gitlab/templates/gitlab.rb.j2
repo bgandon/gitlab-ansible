@@ -1,0 +1,50 @@
+
+# The URL through which GitLab will be accessed.
+external_url "https://{{ gitlab_external_fqdn }}:{{ gitlab_external_port }}"
+
+# gitlab.yml configuration
+gitlab_rails['time_zone'] = {{ gitlab_time_zone | to_json }}
+
+# The directory where Gitlab backups will be stored
+gitlab_rails['backup_path'] =      {{ gitlab_backup_path      | to_json }}
+gitlab_rails['backup_keep_time'] = {{ gitlab_backup_keep_time | to_json }}
+
+gitlab_rails['gitlab_email_enabled'] = {{ gitlab_email_enabled | to_json }}
+{% if gitlab_email_enabled %}
+  gitlab_rails['gitlab_email_from'] =         {{ gitlab_email_from         | to_json }}
+  gitlab_rails['gitlab_email_display_name'] = {{ gitlab_email_display_name | to_json }}
+  gitlab_rails['gitlab_email_reply_to'] =     {{ gitlab_email_reply_to     | to_json }}
+{% endif %}
+
+letsencrypt['enable'] = {{ gitlab_letsencrypt_enabled | to_json }}
+{% if gitlab_letsencrypt_enabled %}
+  letsencrypt['contact_emails'] =          {{ gitlab_letsencrypt_contact_emails          | to_json }}
+  letsencrypt['auto_renew'] =              {{ gitlab_letsencrypt_auto_renew_enabled      | to_json }}
+  letsencrypt['auto_renew_hour'] =         {{ gitlab_letsencrypt_auto_renew_hour         | to_json }}
+  letsencrypt['auto_renew_minute'] =       {{ gitlab_letsencrypt_auto_renew_minute       | to_json }}
+  letsencrypt['auto_renew_day_of_month'] = {{ gitlab_letsencrypt_auto_renew_day_of_month | to_json }}
+{% endif %}
+
+# Use smtp instead of sendmail/postfix
+# More details and example configuration at
+# https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/smtp.md
+gitlab_rails['smtp_enable'] = {{ gitlab_smtp_enabled | to_json }}
+{% if gitlab_smtp_enabled %}
+  gitlab_rails['smtp_address'] = {{ gitlab_smtp_address | to_json }}
+  gitlab_rails['smtp_port'] =    {{ gitlab_smtp_port | to_json }}
+  {% if gitlab_smtp_user_name %}
+    gitlab_rails['smtp_user_name'] = {{ gitlab_smtp_user_name | to_json }}
+  {% endif %}
+  {% if gitlab_smtp_password %}
+    gitlab_rails['smtp_password'] = {{ gitlab_smtp_password | to_json }}
+  {% endif %}
+  gitlab_rails['smtp_domain'] = '{{ gitlab_smtp_domain | to_json }}'
+  {% if gitlab_smtp_authentication %}
+    gitlab_rails['smtp_authentication'] = {{ gitlab_smtp_authentication | to_json }}
+  {% endif %}
+  gitlab_rails['smtp_enable_starttls_auto'] = {{ gitlab_smtp_enable_starttls_auto | to_json }}
+  gitlab_rails['smtp_tls'] =                  {{ gitlab_smtp_tls                  | to_json }}
+  gitlab_rails['smtp_openssl_verify_mode'] =  {{ gitlab_smtp_openssl_verify_mode  | to_json }}
+  gitlab_rails['smtp_ca_path'] =              {{ gitlab_smtp_ca_path              | to_json }}
+  gitlab_rails['smtp_ca_file'] =              {{ gitlab_smtp_ca_file              | to_json }}
+{% endif %}

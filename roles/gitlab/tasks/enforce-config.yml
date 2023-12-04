@@ -1,0 +1,17 @@
+---
+
+- name: GitLab | initial configuration file is saved
+  become: true
+  ansible.builtin.command:
+    cmd: mv /etc/gitlab/gitlab.rb /etc/gitlab/package-default-gitlab.rb
+    creates: /etc/gitlab/package-default-gitlab.rb
+
+- name: GitLab | configuration file is customized
+  become: true
+  ansible.builtin.template:
+    src: templates/gitlab.rb.j2
+    dest: /etc/gitlab/gitlab.rb
+    owner: root
+    group: root
+    mode: "0600"
+  notify: restart_gitlab

@@ -14,10 +14,14 @@
   ansible.builtin.import_tasks: install-prerequisites.yml
   tags: [ gitlab ]
 
-- name: GitLab | Yum repo is setup
+- name: GitLab | yum repo is setup
   ansible.builtin.import_tasks: setup-gitlab-repo.yml
   tags: [ gitlab ]
 
-- name: GitLab | GitLab is installed
+- name: GitLab | package is installed
   ansible.builtin.import_tasks: install-package.yml
+  tags: [ gitlab ]
+
+- name: GitLab | is configured
+  ansible.builtin.import_tasks: enforce-config.yml
   tags: [ gitlab ]
