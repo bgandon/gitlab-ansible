@@ -5,7 +5,7 @@
   ansible.builtin.yum:
     name: "gitlab-{{ gitlab_edition_abbreviation }}"
   environment:
-    EXTERNAL_URL: "https://{{ external_fqdn }}:{{ external_port }}"
+    EXTERNAL_URL: "https://{{ gitlab_external_fqdn }}:{{ gitlab_external_port }}"
     GITLAB_ROOT_PASSWORD: "{{ gitlab_root_password }}"
   notify:
     - setup_api_token

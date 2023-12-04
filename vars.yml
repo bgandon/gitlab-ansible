@@ -1,2 +1,3 @@
-external_fqdn: <PROVIDE A VALUE HERE>
-gitlab_admin_password: <PROVIDE A VALUE HERE>
+gitlab_external_fqdn: <PROVIDE A VALUE HERE>
+gitlab_root_password: <PROVIDE A VALUE HERE>
+gitlab_root_api_token: <PROVIDE A VALUE HERE>

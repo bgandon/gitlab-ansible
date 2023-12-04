@@ -10,7 +10,7 @@
               name:        'Ansible Automation token',
               expires_at:  Date.today + 365.days
           );
-      token.set_token('{{ gitlab_admin_api_token }}');
+      token.set_token('{{ gitlab_root_api_token }}');
       token.save!
       "
   register: token_create_output

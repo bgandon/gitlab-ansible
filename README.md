@@ -35,7 +35,7 @@ price (compared to public clouds).
    it with Ubuntu Jammy (22.04) system. Install VirtualBox on it. We use an
    [Ansible role][virtualbox_ansible] for that, but it's up to you.
 
-2. Create a DNS record named after `external_fqdn` and pointing to the IP
+2. Create a DNS record named after `gitlab_external_fqdn` and pointing to the IP
    address of your VM. We use [Gandi][gandi] and [DNSControl][dnscontrol] for
    that, but it's up to you.
 
@@ -90,16 +90,16 @@ Usage
 3. Write your variables file.
 
     First, we create the `vars.yml` file with the value for our
-    `external_fqdn` related to the DNS record above.
+    `gitlab_external_fqdn` related to the DNS record above.
 
         ```shell
         cat > vars.yml <<EOF
-        external_fqdn: gitlab.example.org
+        gitlab_external_fqdn: gitlab.example.org
         EOF
         ```
 
     We also need a strong secrets for the `gitlab_root_password` and the
-    `gitlab_admin_api_token`. The Bosh CLI is a nice tool for completing some
+    `gitlab_root_api_token`. The Bosh CLI is a nice tool for completing some
     YAML file, adding a random-generated secret when it's missing.
 
         ```bash
@@ -107,7 +107,7 @@ Usage
         bosh interpolate "-" --vars-store="vars.yml" > /dev/null \
             <<<"--- { variables: [ { name: gitlab_root_password, type: password } ] }"
         bosh interpolate "-" --vars-store="vars.yml" > /dev/null \
-            <<<"--- { variables: [ { name: gitlab_admin_api_token, type: password, options: { length: 32 } } ] }"
+            <<<"--- { variables: [ { name: gitlab_root_api_token, type: password, options: { length: 32 } } ] }"
         ```
 
     _(Here we use the `<<<` [Bash-ism][bashism] for injecting a string as
