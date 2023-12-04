@@ -2,4 +2,4 @@
 
 - name: GitLab CE | set CE vars
   ansible.builtin.set_fact:
-    edition_abbreviation: ce
+    gitlab_edition_abbreviation: ce

@@ -3,7 +3,7 @@
 - name: GitLab | the all-in-one package is installed (this step may take several minutes to complete)
   become: true
   ansible.builtin.yum:
-    name: "gitlab-{{ edition_abbreviation }}"
+    name: "gitlab-{{ gitlab_edition_abbreviation }}"
   environment:
     EXTERNAL_URL: "https://{{ external_fqdn }}:{{ external_port }}"
     GITLAB_ROOT_PASSWORD: "{{ gitlab_root_password }}"
