@@ -1,9 +1,19 @@
 ---
 
+- name: GitLab | the package name with pinned version is defined
+  ansible.builtin.set_fact:
+    gitlab_package_name: gitlab-{{ gitlab_edition_abbreviation }}-{{ gitlab_version }}-{{ gitlab_edition_abbreviation }}.0.el{{ ansible_distribution_major_version }}
+  when: gitlab_version != ''
+
+- name: GitLab | the package name without version pinning is defined
+  ansible.builtin.set_fact:
+    gitlab_package_name: gitlab-{{ gitlab_edition_abbreviation }}
+  when: gitlab_version == ''
+
 - name: GitLab | the all-in-one package is installed (this step may take several minutes to complete)
   become: true
   ansible.builtin.yum:
-    name: "gitlab-{{ gitlab_edition_abbreviation }}"
+    name: "{{ gitlab_package_name }}"
   environment:
     EXTERNAL_URL: "https://{{ gitlab_external_fqdn }}:{{ gitlab_external_port }}"
     GITLAB_ROOT_PASSWORD: "{{ gitlab_root_password }}"
