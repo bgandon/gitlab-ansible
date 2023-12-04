@@ -19,5 +19,5 @@
   tags: [ gitlab ]
 
 - name: GitLab | GitLab is installed
-  ansible.builtin.import_tasks: install-gitlab.yml
+  ansible.builtin.import_tasks: install-package.yml
   tags: [ gitlab ]
