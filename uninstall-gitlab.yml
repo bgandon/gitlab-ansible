@@ -1,26 +1,62 @@
 ---
 
+# See the documented procedure:
+# <https://docs.gitlab.com/omnibus/installation/#uninstall-the-linux-package-omnibus>
+
 - name: GitLab | is completely uninstalled
   hosts: gitlab
   tasks:
-    - name: GitLab | processes are stopped
+    - name: GitLab uninstall | processes are stopped, accounts removed
       become: true
-      ansible.builtin.command: gitlab-ctl stop
+      ansible.builtin.command: gitlab-ctl {{ command }}
+      loop_control:
+        loop_var: command
+        pause: 5
+      loop:
+        - stop
+        - remove-accounts
+      tags: [ gitlab-uninstall ]
 
-    - name: GitLab | files are uninstalled
+    - name: GitLab uninstall | runsvdir is stopped
       become: true
-      ansible.builtin.command: gitlab-ctl uninstall
+      ansible.builtin.systemd_service:
+        name: gitlab-runsvdir
+        enabled: false
+        state: stopped
+      tags: [ gitlab-uninstall ]
 
-    - name: GitLab | remaining configs are removed
+    - name: GitLab uninstall | the 'gitlab-runsvdir' unit file is absent
       become: true
-      ansible.builtin.command: gitlab-ctl cleanse
+      ansible.builtin.file:
+        path: /usr/lib/systemd/system/gitlab-runsvdir.service
+        state: absent
+      tags: [ gitlab-uninstall ]
 
-    - name: GitLab | user accounts are removed
+    - name: GitLab uninstall | the systemd daemon is reloaded
       become: true
-      ansible.builtin.command: gitlab-ctl remove-accounts
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+      tags: [ gitlab-uninstall ]
 
-    - name: GitLab | the all-in-one package is removed
+    - name: GitLab uninstall | the "failed" state of all systemd units is reset
+      become: true
+      ansible.builtin.command: systemctl reset-failed
+      tags: [ gitlab-uninstall ]
+
+    - name: GitLab uninstall | files are uninstalled, configs removed
+      become: true
+      ansible.builtin.command: gitlab-ctl {{ command }}
+      loop_control:
+        loop_var: command
+        pause: 5
+      loop:
+        - uninstall
+        - cleanse
+      tags: [ gitlab-uninstall ]
+
+    - name: GitLab uninstall | the all-in-one package is removed
       become: true
       ansible.builtin.package:
         name: gitlab-ce
         state: absent
+      tags: [ gitlab-uninstall ]
