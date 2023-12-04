@@ -5,17 +5,20 @@
 
 - name: GitLab | is completely uninstalled
   hosts: gitlab
+  vars:
+    gitlab_destroy_data: true
   tasks:
     - name: GitLab uninstall | processes are stopped, accounts removed
       become: true
-      ansible.builtin.command: gitlab-ctl {{ command }}
+      ansible.builtin.command:
+        cmd: gitlab-ctl {{ command }}
       loop_control:
         loop_var: command
         pause: 5
       loop:
         - stop
         - remove-accounts
-      tags: [ gitlab-uninstall ]
+      tags: [ stop-processes ]
 
     - name: GitLab uninstall | runsvdir is stopped
       become: true
@@ -23,40 +26,50 @@
         name: gitlab-runsvdir
         enabled: false
         state: stopped
-      tags: [ gitlab-uninstall ]
+      tags: [ stop-process-supervisor ]
 
     - name: GitLab uninstall | the 'gitlab-runsvdir' unit file is absent
       become: true
       ansible.builtin.file:
         path: /usr/lib/systemd/system/gitlab-runsvdir.service
         state: absent
-      tags: [ gitlab-uninstall ]
+      tags: [ remove-unit-file ]
 
     - name: GitLab uninstall | the systemd daemon is reloaded
       become: true
       ansible.builtin.systemd_service:
         daemon_reload: true
-      tags: [ gitlab-uninstall ]
+      tags: [ reload-systemd ]
 
     - name: GitLab uninstall | the "failed" state of all systemd units is reset
       become: true
-      ansible.builtin.command: systemctl reset-failed
-      tags: [ gitlab-uninstall ]
+      ansible.builtin.command:
+        cmd: systemctl reset-failed
+      tags: [ reset-systemd-unit-failed-state ]
 
-    - name: GitLab uninstall | files are uninstalled, configs removed
+    - name: GitLab uninstall | the process supervisor is uninstalled
       become: true
-      ansible.builtin.command: gitlab-ctl {{ command }}
-      loop_control:
-        loop_var: command
-        pause: 5
-      loop:
-        - uninstall
-        - cleanse
-      tags: [ gitlab-uninstall ]
+      ansible.builtin.command:
+        cmd: gitlab-ctl uninstall
+      tags: [ uninstall-process-supervisor ]
+
+    - name: GitLab uninstall | data is destroyed
+      when: gitlab_destroy_data | default(false) | bool
+      block:
+        - name: GitLab uninstall | all gitlab data is deleted
+          become: true
+          ansible.builtin.command: gitlab-ctl cleanse
+
+        - name: GitLab uninstall | the base directory is removed
+          become: true
+          ansible.builtin.file:
+            path: /opt/gitlab
+            state: absent
+      tags: [ destroy-data ]
 
     - name: GitLab uninstall | the all-in-one package is removed
       become: true
       ansible.builtin.package:
         name: gitlab-ce
         state: absent
-      tags: [ gitlab-uninstall ]
+      tags: [ uninstall-package ]
