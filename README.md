@@ -165,6 +165,20 @@ is used behind the scene to install GitLab. The names “_all-in-one_” or
 
 
 
+Testing the GitLab API
+----------------------
+
+Here is an example `curl`command that lists the projects hosted by the GitLab
+instance using the REST API and the create access token:
+
+```shell
+curl --verbose \
+    --header "PRIVATE-TOKEN: $(bosh int vars.yml --path /gitlab_root_api_token)" \
+    --url "https://$(bosh int vars.yml --path /gitlab_external_fqdn)/api/v4/projects"
+```
+
+
+
 Contributing
 ------------
 
