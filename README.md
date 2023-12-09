@@ -89,8 +89,9 @@ Usage
 
 3. Write your variables file.
 
-    First, we create the `vars.yml` file with the value for our
-    `gitlab_external_fqdn` related to the DNS record above.
+    Following the example provided in `vars.example.yml`, we create the
+    `vars.yml` file with a value for our `gitlab_external_fqdn`, related to
+    the DNS record above.
 
         ```shell
         cat > vars.yml <<EOF
