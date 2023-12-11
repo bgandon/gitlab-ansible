@@ -1,0 +1,19 @@
+---
+
+- name: GitLab | groups are created
+  community.general.gitlab_group:
+    name:        "{{ group.name }}"
+    path:        "{{ group.full_path | basename }}"
+    description: "{{ group.description }}"
+    parent:      "{{ group.full_path | dirname }}"
+    state:       present
+    <<: &gitlab_creds
+      api_url:        "{{ gitlab_external_url }}"
+      validate_certs: true
+      api_token:      "{{ gitlab_root_api_token }}"
+  loop_control: { loop_var: group }
+  loop: "{{ hostvars[inventory_hostname].gitlab_groups }}"
+  register: create_groups_execution
+
+- debug:
+    var: "{{ create_groups_execution }}"

@@ -207,6 +207,47 @@ displaying the `https:` in red and strike-through font. But in fact, it will be
 trusted.
 
 
+### Create groups
+
+As prerequisites for group creation, you need an Ansible runner, where the
+Python requirements listed in `requirements.txt` are met. The playbook is
+designed to use `localhost` as runner, using your user.
+
+We recommend you install the required Python version specified in
+`.python-version` using `pyenv` so that it won't mess up with anything else
+you may have on your system, and verify with `which python` that you're now
+using the version from `pyenv` after proper setup.
+
+Then we recommend you  use `virtualenvwrapper` and create the virtual env with
+`mkvirtualenv gitlab-ansible`, then enter it with `workon gitlab-ansible` and
+populate it with `python3 -m pip install ansible`, `pip install --upgrade pip`
+and `pip install -r requirements.txt`. Verify with `which ansible` that you're
+now using the version from virtual env.
+
+The inventory config for the `gitlab_installs` group (that is specifically
+used for setting up GitLab) is as follows.
+
+```yaml
+ansible_user: your-username # as in `echo $USER`
+ansible_connection: local
+ansible_python_interpreter: "<you-user-$HOME-path>/.virtualenvs/gitlab-ansible/bin/python3"
+```
+
+Ensure you have the required Ansible collections and roles properly installed.
+
+```shell
+ansible-galaxy install -r requirements.yml
+```
+
+This finishes your `localhost` Ansible runner setup.
+
+Once these preprequisites are met, you may run the groups creation as follows.
+
+```shell
+ansible-playbook playbooks/setup-gitlab.yml --extra-vars @vars/prod.yml
+```
+
+
 ### Cleanup
 
 You may uninstall GitLab completely:

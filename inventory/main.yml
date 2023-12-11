@@ -2,15 +2,35 @@
 all:
   vars: {}
 
-gitlab:
+gitlab_hosts:
   hosts:
     localhost:
       ansible_user: vagrant
+      ansible_connection: ssh
       # ansible_password: <provide-a-value-if-necessary>
-      ansible_become: yes
       # ansible_become_password: <provide-a-value-if-necessary>
 
       # You may also specify the configuration values here:
       # gitlab_external_fqdn:  gitlab.example.org
       # gitlab_root_password:  <provide-a-value-if-necessary>
       # gitlab_root_api_token: <provide-a-value-if-necessary>
+
+gitlab_installations:
+  hosts:
+    localhost:
+      ansible_user: your-username # as in `echo $USER`
+      ansible_connection: local
+      ansible_python_interpreter: "<you-user-$HOME-path>/.virtualenvs/gitlab-ansible/bin/python3"
+
+      gitlab_external_url: https://{{ gitlab_external_fqdn }}
+      # Example GitLab groups:
+      gitlab_groups:
+        - name:        Web Team
+          full_path:   web-team
+          description: Projects of the Web Team
+        - name:        Laravel
+          full_path:   web-team/laravel
+          description: Projects based on Laravel
+        - name:        Symfony
+          full_path:   web-team/symfony
+          description: Projects based on Symfony

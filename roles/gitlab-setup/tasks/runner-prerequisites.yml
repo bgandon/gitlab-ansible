@@ -1,0 +1,6 @@
+---
+
+- name: GitLab | the required 'python-gitlab' package is installed
+  ansible.builtin.pip:
+    name: python-gitlab==4.2.0
+    state: present

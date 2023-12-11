@@ -1,0 +1,6 @@
+---
+
+- name: GitLab | groups setup is done
+  hosts: gitlab_installations
+  roles:
+    - gitlab-setup
