@@ -148,6 +148,91 @@ vagrant destroy
 ```
 
 
+### “Extra config” example
+
+The required [OmniAuth configuration][gitlab_omniauth] for authenticating to
+GitLab using Single-Sign On (SSO), is not directly exposed as variables in the
+Ansible role, but the `gitlab_extra_settings` configuration property brings
+enough flexibility to properly set it up.
+
+Here we provide an example of SSO configuration, based on some SAML identity
+provider, which happens to be _SafeNet Trusted Access_ (STA) here, but could
+also be any other SAML provider. The overall check-list for configuring any
+SAML provider is the following:
+
+1. Read the identity provider (IdP) documentation. In this case, this is the
+   “[SafeNet Trusted Access for GitLab][sta_gitlab]” article.
+
+2. Obtain the IdP XML metadata file.
+
+3. Configure as demonstrated below, using the values from the IdP metadata
+   obtained above.
+
+4. Fetch the XML metadata from the GitLab instance at
+   `https://gitlab.example.org/users/auth/saml/metadata`
+
+5. Have the GitLab instance properly registered in the IdP using the metadata
+   fetched above.
+
+[gitlab_omniauth]: https://docs.gitlab.com/ee/integration/omniauth.html
+[sta_gitlab]: https://resources.eu.safenetid.com/help/GitLab/Index.htm
+
+
+#### Example SAML Single-Sign On configuration
+
+In the following configuration example, you'll need to replace the following
+bits:
+
+- `gitlab.example.org`, which is the GitLab instance hostname, to be replaced
+  by the exact value from your instalation.
+
+- The `idp_cert_fingerprint` value, which is the (case-insensitive) SHA1
+  fingerprint of the identity provider (IdP) certificate, comming
+  **from the IdP metadata XML** (see the [caveats](#caveats) below).
+
+- The `<REAML-IDENTIFIER>`, which is the “authentication realm” identifier
+  from your SafeNet Trusted Access (STA) subscription, to be replaced by the
+  actual value.
+
+```yaml
+gitlab_extra_settings:
+  - gitlab_rails:
+      - key: omniauth_allow_single_sign_on
+        value: [ saml ]
+      - key: omniauth_block_auto_created_users
+        value: false
+      - key: omniauth_providers
+        type: plain
+        value: |
+          [
+            {
+              name: "saml",
+              args: {
+                assertion_consumer_service_url: "https://gitlab.example.org/users/auth/saml/callback",
+                idp_cert_fingerprint: "E3:F1:16:B3:91:E8:CA:86:61:FB:0A:15:CD:6B:8D:56:EB:BC:56:23",
+                idp_sso_target_url: "https://idp.safenetid.com/auth/realms/<REAML-IDENTIFIER>/protocol/saml",
+                issuer: "https://gitlab.example.org",
+                name_identifier_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent",
+              },
+              label: "Single-Sign On (SSO) Authentication"
+            }
+          ]
+```
+
+
+#### Caveats
+
+The `idp_cert_fingerprint` value is to be obtained from the IdP metadata XML.
+Indeed, it differs from the fingerprint that can be computed from the TLS
+certificate of the IdP host ising `openssl` commands like the following:
+
+```shell
+openssl s_client -connect "idp.safenetid.com:443" <<<"" 2> /dev/null \
+    | openssl x509 -noout - sha1 -fingerprint \
+    | awk -F= '/SHA1 Fingerprint/{print $2}'
+```
+
+
 ### Limitations
 
 The resulting GitLab installation is the most simple one. Full-blown,

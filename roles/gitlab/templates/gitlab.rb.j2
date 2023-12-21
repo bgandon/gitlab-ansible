@@ -48,3 +48,18 @@ gitlab_rails['smtp_enable'] = {{ gitlab_smtp_enabled | to_json }}
   gitlab_rails['smtp_ca_path'] =              {{ gitlab_smtp_ca_path              | to_json }}
   gitlab_rails['smtp_ca_file'] =              {{ gitlab_smtp_ca_file              | to_json }}
 {% endif %}
+
+{% if gitlab_extra_settings is defined %}
+# Extra configuration
+  {% for cfg_elem in gitlab_extra_settings %}
+    {% for setting in cfg_elem %}
+      {% for entry in cfg_elem[setting] %}
+        {% if (entry.type is defined and entry.type == 'plain') or (entry.value is not string) %}
+          {{ setting }}[{{ entry.key | to_json }}] = {{ entry.value }}
+        {% else %}
+          {{ setting }}[{{ entry.key | to_json }}] = {{ entry.value | to_json }}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
