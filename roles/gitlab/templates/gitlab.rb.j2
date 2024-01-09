@@ -9,6 +9,7 @@ gitlab_rails['time_zone'] = {{ gitlab_time_zone | to_json }}
 gitlab_rails['backup_path'] =      {{ gitlab_backup_path      | to_json }}
 gitlab_rails['backup_keep_time'] = {{ gitlab_backup_keep_time | to_json }}
 
+# When activated, email sending uses Postfix/Sendmail by default
 gitlab_rails['gitlab_email_enabled'] = {{ gitlab_email_enabled | to_json }}
 {% if gitlab_email_enabled %}
   gitlab_rails['gitlab_email_from'] =         {{ gitlab_email_from         | to_json }}
@@ -25,7 +26,7 @@ letsencrypt['enable'] = {{ gitlab_letsencrypt_enabled | to_json }}
   letsencrypt['auto_renew_day_of_month'] = {{ gitlab_letsencrypt_auto_renew_day_of_month | to_json }}
 {% endif %}
 
-# Use smtp instead of sendmail/postfix
+# Use SMTP instead of Sendmail/Postfix
 # More details and example configuration at
 # https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/smtp.md
 gitlab_rails['smtp_enable'] = {{ gitlab_smtp_enabled | to_json }}

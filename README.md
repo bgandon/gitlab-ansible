@@ -236,7 +236,7 @@ openssl s_client -connect "idp.safenetid.com:443" <<<"" 2> /dev/null \
 ### Limitations
 
 The resulting GitLab installation is the most simple one. Full-blown,
-monolithic installation, that cannot scale.
+monolithic installation, that is not easy to scale.
 
 
 ### Omnibus package
