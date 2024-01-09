@@ -133,6 +133,61 @@ Going further, you can optionally setup monitoring with Prometheus.
 [bashism]: https://en.wiktionary.org/wiki/bashism
 
 
+### Easily create your own PKI with certstrap
+
+Install `cerstrap`:
+
+```shell
+curl --location \
+    --url https://github.com/square/certstrap/releases/download/v1.3.0/certstrap-linux-amd64 \
+    --output /usr/local/bin/certstrap
+chmod +x /usr/local/bin/certstrap
+```
+
+Create the Certificate Authority:
+
+```shell
+certstrap --depot-path="/etc/gitlab/trusted-certs/pki" init \
+    --common-name=GitLab_CA
+```
+
+Create the server certificate:
+
+```shell
+cd /etc/gitlab/trusted-certs
+certstrap --depot-path="pki" request-cert \
+    --common-name="gitlab.example.org" --domain="gitlab.example.org"
+certstrap --depot-path="pki" sign \
+    "gitlab.example.org" --CA "GitLab_CA"
+cp -a pki/gitlab.example.org.{crt,key} .
+
+cd ../ssl
+ln -sf ../trusted-certs/gitlab.example.org.* .
+```
+
+Then trigger a non-significant change in `/etc/gitlab/gitlab.rb`, like adding
+an empty comment `#` at then end of the file, so that Ansible sees a
+difference and can trigger the `gitlab-ctl reconfigure` handler properly.
+
+With this, run the `ansible-playbook` command again.
+
+On your workstations, copy the `/etc/gitlab/trusted-certs/pki/GitLab_CA.crt`
+file to your Windows hosts, double-click it, and choose carrefully the
+_trusted root certificates_ store where to instal it. As a confirmation you
+did right, you'll get an extra confirmation popup because your adding a CA.
+
+On macOS hosts, copy the same file and open it (double-click or use the `open`
+CLI command) to add ot to the _Key Chains_ app. double-click it in _Key
+Chains_ and in the opened window for this certificate, unroll the “when to
+trust” selector, to choose “always trust” and close then window. At that
+moment, _Key Chains_ will ask for your password as a confirmation of the
+certificate trust action, enter it and you're done.
+
+Navigators may not recognize your certificate immediately, first still
+displaying the `https:` in red and strike-through font. But in fact, it will be
+trusted.
+
+
 ### Cleanup
 
 You may uninstall GitLab completely:
