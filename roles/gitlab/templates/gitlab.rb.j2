@@ -14,7 +14,9 @@ gitlab_rails['gitlab_email_enabled'] = {{ gitlab_email_enabled | to_json }}
 {% if gitlab_email_enabled %}
   gitlab_rails['gitlab_email_from'] =         {{ gitlab_email_from         | to_json }}
   gitlab_rails['gitlab_email_display_name'] = {{ gitlab_email_display_name | to_json }}
-  gitlab_rails['gitlab_email_reply_to'] =     {{ gitlab_email_reply_to     | to_json }}
+  {% if gitlab_email_reply_to | default(false) %}
+    gitlab_rails['gitlab_email_reply_to'] =     {{ gitlab_email_reply_to     | to_json }}
+  {% endif %}
 {% endif %}
 
 letsencrypt['enable'] = {{ gitlab_letsencrypt_enabled | to_json }}
@@ -46,8 +48,12 @@ gitlab_rails['smtp_enable'] = {{ gitlab_smtp_enabled | to_json }}
   gitlab_rails['smtp_enable_starttls_auto'] = {{ gitlab_smtp_enable_starttls_auto | to_json }}
   gitlab_rails['smtp_tls'] =                  {{ gitlab_smtp_tls                  | to_json }}
   gitlab_rails['smtp_openssl_verify_mode'] =  {{ gitlab_smtp_openssl_verify_mode  | to_json }}
-  gitlab_rails['smtp_ca_path'] =              {{ gitlab_smtp_ca_path              | to_json }}
-  gitlab_rails['smtp_ca_file'] =              {{ gitlab_smtp_ca_file              | to_json }}
+  {% if gitlab_smtp_ca_path | default(false) %}
+    gitlab_rails['smtp_ca_path'] =              {{ gitlab_smtp_ca_path              | to_json }}
+  {% endif %}
+  {% if gitlab_smtp_ca_file | default(false) %}
+    gitlab_rails['smtp_ca_file'] =              {{ gitlab_smtp_ca_file              | to_json }}
+  {% endif %}
 {% endif %}
 
 {% if gitlab_extra_settings is defined %}
