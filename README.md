@@ -137,7 +137,7 @@ Usage
 3. Invoke the Ansible playbook
 
         ```shell
-        ansible-playbook install-gitlab.yml --extra-vars @vars/prod.yml
+        ansible-playbook playbooks/install-gitlab.yml --extra-vars @vars/prod.yml
         ```
 
     _(We use the `@` prefix to specify a file containing our variables, where
@@ -212,7 +212,7 @@ trusted.
 You may uninstall GitLab completely:
 
  ```shell
- ansible-playbook uninstall-gitlab.yml
+ ansible-playbook playbooks/uninstall-gitlab.yml
  ```
 
 Or just destroy the guest VM completely:
