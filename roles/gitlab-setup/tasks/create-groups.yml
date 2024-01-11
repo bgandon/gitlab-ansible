@@ -14,6 +14,3 @@
   loop_control: { loop_var: group }
   loop: "{{ hostvars[inventory_hostname].gitlab_groups }}"
   register: create_groups_execution
-
-- debug:
-    var: "{{ create_groups_execution }}"

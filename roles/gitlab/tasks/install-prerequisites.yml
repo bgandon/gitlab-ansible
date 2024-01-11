@@ -42,6 +42,7 @@
 #   - firewall-cmd --permanent --zone=public --add-service=https
 #   - firewall-cmd --reload
 - name: GitLab | permit traffic in default zone for https service
+  become: true
   ansible.posix.firewalld:
     service: "{{ service }}"
     permanent: true

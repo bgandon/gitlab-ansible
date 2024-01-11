@@ -1,6 +1,7 @@
 ---
 
 - name: GitLab | access token for API access of user 'root' is created
+  become: true
   ansible.builtin.shell:
     cmd: >
       gitlab-rails runner
@@ -17,6 +18,7 @@
     - setup_api_token
 
 - name: GitLab | app is reconfigured
+  become: true
   ansible.builtin.command:
     cmd: gitlab-ctl reconfigure
   listen:
