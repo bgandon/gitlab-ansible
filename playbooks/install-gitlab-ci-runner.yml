@@ -1,0 +1,7 @@
+---
+
+- name: GitLab | CI runner is co-located
+  hosts: gitlab_hosts
+  roles:
+    - podman
+    - gitlab-runner

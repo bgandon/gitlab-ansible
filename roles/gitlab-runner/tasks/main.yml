@@ -1,0 +1,53 @@
+---
+
+- name: GitLab CI runner | Container image is pulled from registry
+  become: true
+  containers.podman.podman_image:
+    name: docker.io/gitlab/gitlab-runner:latest
+    state: present
+
+- name: GitLab CI runner | Container volume path is defined
+  become: true
+  file:
+    state: directory
+    recurse: true
+    path: "{{ gitlab_runner_container_mount_path }}"
+
+- name: GitLab CI runner | Registration command without secrets is constructed
+  set_fact:
+    register_runner_cmd: >-
+      register
+      --non-interactive
+      --url          "{{ gitlab_external_url }}"
+      --executor     "docker"
+      --docker-image "alpine:latest"
+      --description  "docker-runner"
+
+- name: GitLab CI runner | Runner is registered to GitLab
+  become: true
+  containers.podman.podman_container:
+    name: gitlab-runner
+    image: gitlab/gitlab-runner:latest
+    command: >
+      {{ register_runner_cmd }}
+      --token {{ gitlab_runner_registration_token | to_json }}
+    volumes:
+      - "{{ gitlab_runner_container_mount_path }}:/etc/gitlab-runner:rw,U,z"
+    network_mode: default
+    auto_remove: true
+
+- name: GitLab CI runner | Container is started
+  become: true
+  containers.podman.podman_container:
+    name: gitlab-runner
+    image: gitlab/gitlab-runner:latest
+    privileged: true
+    volumes:
+      - "{{ gitlab_runner_container_mount_path }}:/etc/gitlab-runner:rw,U,z"
+      - "/var/run/docker.sock:/var/run/docker.sock:rw,U,z"
+    network_mode: default
+    generate_systemd:
+      path: /etc/systemd/system/multi-user.target.wants/gitlab-ci-runner.service
+      requires:
+        - podman.socket
+      restart_policy: always

@@ -1,0 +1,3 @@
+---
+
+gitlab_runner_container_mount_path: /var/opt/gitlab/runner/config

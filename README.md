@@ -226,6 +226,36 @@ displaying the `https:` in red and strike-through font. But in fact, it will be
 trusted.
 
 
+### Setup a co-located GitLab CI runner using Podman
+
+1. In order for the GitLab CI runner container to properly trust the custom CA
+   certificate, copy it to the `certs/ca.crt` file within its configuration
+   directory.
+
+        ```shell
+        cp -a /etc/gitlab/trusted-certs/pki/GitLab_CA.crt /var/opt/gitlab/runner/config/certs/ca.crt
+        ```
+
+2. In order to create a registration token, go to to your GitLab installation
+   at `https://gitlab.example.org/admin/runners/new`, set `gitlab-runner` as
+   description, check the “_Run untagged jobs_” checkbox, then click “_Create
+   runner_” to validate.
+
+    Copy/paste the generated `glrt`-prefixed GitLab CI Runner token to your
+    `vars/prod.yml` private variables file, as a value for the
+    `gitlab_runner_registration_token` variable.
+
+        ```yaml
+        gitlab_runner_registration_token: "glrt-<REDACTED-TOKEN-TAIL>"
+        ```
+
+3. Run the runner installation playbook.
+
+        ```shell
+        ansible-playbook playbooks/install-gitlab-ci-runner.yml --extra-vars @vars/prod.yml
+        ```
+
+
 ### Create groups
 
 As prerequisites for group creation, you need an Ansible runner, where the

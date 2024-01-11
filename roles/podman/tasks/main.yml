@@ -1,0 +1,32 @@
+---
+
+- name: Podman | the Podman & Docker-shim packages are installed
+  become: true
+  ansible.builtin.yum:
+    name:
+      - podman        # podman (Pod Manager) is a fully featured container
+                      # engine that is a simple daemonless tool.  podman
+                      # provides a Docker-CLI comparable command line that
+                      # eases the transition from other container engines and
+                      # allows the management of pods, containers and images.
+                      # Simply put: alias docker=podman. Most podman commands
+                      # can be run as a regular user, without requiring
+                      # additional privileges.
+                      #
+                      # podman uses Buildah(1) internally to create container
+                      # images. Both tools share image (not container)
+                      # storage, hence each can use or manipulate images (but
+                      # not containers) created by the other.
+
+      - podman-docker # This package installs a script named docker that
+                      # emulates the Docker CLI by executes podman commands,
+                      # it also creates links between all Docker CLI man pages
+                      # and podman.
+    state: present
+
+- name: Podman | the Podman socket is enabled and started
+  become: true
+  ansible.builtin.systemd:
+    name:    podman.socket # this provides the  /var/run/docker.sock
+    enabled: true
+    state:   started
