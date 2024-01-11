@@ -27,6 +27,8 @@ this project to be useful.
 Prerequisites
 -------------
 
+### Setup your bare-metal host
+
 You may run the Vagant box on your local machine, but here in this example we
 run it on a distant machine, a bare-metal one, for more power and cheaper
 price (compared to public clouds).
@@ -54,9 +56,7 @@ price (compared to public clouds).
 [dnscontrol]: https://github.com/StackExchange/dnscontrol
 
 
-
-Usage
------
+### Setup the guest VM
 
 1. Clone this repo, then go into it:
 
@@ -87,27 +87,46 @@ Usage
    You need not run the above command, as it is already bundled into the
    `vagrant up` stanza, but you may have to modify this in your context.
 
-3. Write your variables file.
 
-    Following the example provided in `vars.example.yml`, we create the
-    `vars.yml` file with a value for our `gitlab_external_fqdn`, related to
-    the DNS record above.
 
-        ```shell
-        cat > vars.yml <<EOF
-        gitlab_external_fqdn: gitlab.example.org
-        EOF
+Usage
+-----
+
+### Deploy GitLab
+
+1. Setup your inventory.
+
+    Following the example provided in `inventory/main.yml`, configure your
+    GitLab host and customize the associated variables, especially
+    `gitlab_external_fqdn`.
+
+        ```yaml
+        gitlab:
+          hosts:
+            localhost: # <- whatever IP/DNS for targetting the GitLab host through SSH
+              # ...
+              gitlab_external_fqdn:  gitlab.example.org # <- the DNS record setup above
         ```
 
-    We also need a strong secrets for the `gitlab_root_password` and the
-    `gitlab_root_api_token`. The Bosh CLI is a nice tool for completing some
-    YAML file, adding a random-generated secret when it's missing.
+2. Write private variables file.
+
+    Following the example provided in `vars.example.yml`, create a
+    `vars/prod.yml` file (or `vars/staging.yml`, or `vars/sandbox.yml`,
+    depending on the environment you're configuring) and make it private.
 
         ```bash
-        chmod 600 vars.yml
-        bosh interpolate "-" --vars-store="vars.yml" > /dev/null \
+        cp vars.example.yml vars/prod.yml
+        chmod 600 vars/prod.yml
+        ```
+
+    We need strong secrets for `gitlab_root_password` and
+    `gitlab_root_api_token`. The Bosh CLI is a nice tool for completing some
+    YAML file, adding a random-generated secret when it's missing:
+
+        ```bash
+        bosh interpolate "-" --vars-store="vars/prod.yml" > /dev/null \
             <<<"--- { variables: [ { name: gitlab_root_password, type: password } ] }"
-        bosh interpolate "-" --vars-store="vars.yml" > /dev/null \
+        bosh interpolate "-" --vars-store="vars/prod.yml" > /dev/null \
             <<<"--- { variables: [ { name: gitlab_root_api_token, type: password, options: { length: 32 } } ] }"
         ```
 
@@ -115,10 +134,10 @@ Usage
     standard input, and we use a special trick with the `--- ` prefix for
     writing a YAML file as a one-liner.)_
 
-4. Invoke the Ansible Playbook
+3. Invoke the Ansible playbook
 
         ```shell
-        ansible-playbook install-gitlab.yml --extra-vars @vars.yml
+        ansible-playbook install-gitlab.yml --extra-vars @vars/prod.yml
         ```
 
     _(We use the `@` prefix to specify a file containing our variables, where
@@ -196,7 +215,7 @@ You may uninstall GitLab completely:
  ansible-playbook uninstall-gitlab.yml
  ```
 
-Or just destroy the VM completely:
+Or just destroy the guest VM completely:
 
 ```shell
 vagrant destroy
@@ -314,8 +333,8 @@ instance using the REST API and the create access token:
 
 ```shell
 curl --verbose \
-    --header "PRIVATE-TOKEN: $(bosh int vars.yml --path /gitlab_root_api_token)" \
-    --url "https://$(bosh int vars.yml --path /gitlab_external_fqdn)/api/v4/projects"
+    --header "PRIVATE-TOKEN: $(bosh int vars/prod.yml --path /gitlab_root_api_token)" \
+    --url "https://$(bosh int vars/prod.yml --path /gitlab_external_fqdn)/api/v4/projects"
 ```
 
 

@@ -1,3 +1,5 @@
 /.vagrant/
 /tmp/
-/vars.yml
+/vars/sandbox.yml
+/vars/staging.yml
+/vars/prod.yml
