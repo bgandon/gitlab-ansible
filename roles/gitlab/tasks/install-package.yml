@@ -14,8 +14,9 @@
   become: true
   ansible.builtin.yum:
     name: "{{ gitlab_package_name }}"
+    state: present
   environment:
-    EXTERNAL_URL: "https://{{ gitlab_external_fqdn }}:{{ gitlab_external_port }}"
+    EXTERNAL_URL: https://{{ gitlab_external_fqdn }}:{{ gitlab_external_port }}
     GITLAB_ROOT_PASSWORD: "{{ gitlab_root_password }}"
 
     # # This works only for GitLab Docker image, not with the omnibus package:
