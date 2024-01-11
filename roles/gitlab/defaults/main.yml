@@ -18,7 +18,7 @@ gitlab_letsencrypt_auto_renew_minute:       30
 gitlab_letsencrypt_auto_renew_day_of_month: "*/4"
 
 gitlab_backup_path:      /var/opt/gitlab/backups
-gitlab_backup_keep_time: 604800 # 7 days
+gitlab_backup_keep_time: 19958400 # 31 days
 
 gitlab_email_enabled:      false
 gitlab_email_from:         "gitlab@example.com"
