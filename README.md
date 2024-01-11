@@ -161,7 +161,9 @@ Going further, you can optionally setup monitoring with Prometheus.
 
 ### Easily create your own PKI with certstrap
 
-Install `cerstrap`:
+#### Create your own PKI
+
+On your GitLab host, install `cerstrap`:
 
 ```shell
 curl --location \
@@ -185,17 +187,27 @@ certstrap --depot-path="pki" request-cert \
     --common-name="gitlab.example.org" --domain="gitlab.example.org"
 certstrap --depot-path="pki" sign \
     "gitlab.example.org" --CA "GitLab_CA"
-cp -a pki/gitlab.example.org.{crt,key} .
+```
 
+In order to make these available to GitLab, establish a link from the
+`/etc/gitlab/ssl` directory:
+
+```shell
+cd /etc/gitlab/trusted-certs
+cp -a pki/gitlab.example.org.{crt,key} .
 cd ../ssl
 ln -sf ../trusted-certs/gitlab.example.org.* .
 ```
+
+#### Reconfigure GitLab with its TLS certificate
 
 Then trigger a non-significant change in `/etc/gitlab/gitlab.rb`, like adding
 an empty comment `#` at then end of the file, so that Ansible sees a
 difference and can trigger the `gitlab-ctl reconfigure` handler properly.
 
 With this, run the `ansible-playbook` command again.
+
+#### Setup client workstations
 
 On your workstations, copy the `/etc/gitlab/trusted-certs/pki/GitLab_CA.crt`
 file to your Windows hosts, double-click it, and choose carrefully the
