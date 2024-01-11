@@ -94,7 +94,14 @@ Usage
 
 ### Deploy GitLab
 
-1. Setup your inventory.
+1. Ensure you have the required Ansible collections and roles properly
+   installed.
+
+        ```shell
+        ansible-galaxy install -r requirements.yml
+        ```
+
+2. Setup your inventory.
 
     Following the example provided in `inventory/main.yml`, configure your
     GitLab host and customize the associated variables, especially
@@ -108,7 +115,7 @@ Usage
               gitlab_external_fqdn:  gitlab.example.org # <- the DNS record setup above
         ```
 
-2. Write private variables file.
+3. Write private variables file.
 
     Following the example provided in `vars.example.yml`, create a
     `vars/prod.yml` file (or `vars/staging.yml`, or `vars/sandbox.yml`,
@@ -134,7 +141,7 @@ Usage
     standard input, and we use a special trick with the `--- ` prefix for
     writing a YAML file as a one-liner.)_
 
-3. Invoke the Ansible playbook
+4. Invoke the Ansible playbook
 
         ```shell
         ansible-playbook playbooks/install-gitlab.yml --extra-vars @vars/prod.yml
