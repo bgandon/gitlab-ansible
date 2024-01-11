@@ -4,48 +4,60 @@
 # <https://docs.gitlab.com/omnibus/installation/#uninstall-the-linux-package-omnibus>
 
 - name: GitLab | is completely uninstalled
-  hosts: gitlab
-  vars:
-    gitlab_destroy_data: true
+  hosts: gitlab_hosts
+  # vars:
+  #   gitlab_destroy_data: false
   tasks:
-    - name: GitLab uninstall | processes are stopped, accounts removed
+    - name: GitLab uninstall | processes are stopped
       become: true
       ansible.builtin.command:
-        cmd: gitlab-ctl {{ command }}
-      loop_control:
-        loop_var: command
-        pause: 5
-      loop:
-        - stop
-        - remove-accounts
+        cmd: gitlab-ctl stop
       tags: [ stop-processes ]
 
-    - name: GitLab uninstall | runsvdir is stopped
-      become: true
-      ansible.builtin.systemd_service:
-        name: gitlab-runsvdir
-        enabled: false
-        state: stopped
-      tags: [ stop-process-supervisor ]
+    - name: GitLab uninstall | for processes to stop, a delay is observed
+      ansible.builtin.wait_for:
+        timeout: 5 # seconds
 
-    - name: GitLab uninstall | the 'gitlab-runsvdir' unit file is absent
-      become: true
-      ansible.builtin.file:
-        path: /usr/lib/systemd/system/gitlab-runsvdir.service
-        state: absent
-      tags: [ remove-unit-file ]
+    - name: GitLab uninstall | data is destroyed
+      when: gitlab_destroy_data | default(false) | bool
+      tags: [ destroy-data ]
+      block:
+        - name: GitLab uninstall | runsvdir is stopped and disabled
+          become: true
+          ansible.builtin.systemd_service:
+            # KLUDGE: this one should be able to run when
+            # gitlab_destroy_data=false, but unfortunately the `yum install
+            # gitlab-XX` does not properly restarts the
+            # `gitlab-runsvdir.service` systemd unit and the handler for root
+            # API key creation fails. So, in order to be able to re-install
+            # after this uninstall has run, we just don't stop this service.
+            name: gitlab-runsvdir
+            enabled: false
+            state: stopped
+          tags: [ stop-process-supervisor ]
 
-    - name: GitLab uninstall | the systemd daemon is reloaded
-      become: true
-      ansible.builtin.systemd_service:
-        daemon_reload: true
-      tags: [ reload-systemd ]
+        - name: GitLab uninstall | for runsvdir to stop, a delay is observed
+          ansible.builtin.wait_for:
+            timeout: 5 # seconds
 
-    - name: GitLab uninstall | the "failed" state of all systemd units is reset
-      become: true
-      ansible.builtin.command:
-        cmd: systemctl reset-failed
-      tags: [ reset-systemd-unit-failed-state ]
+        - name: GitLab uninstall | the 'gitlab-runsvdir' unit file is absent
+          become: true
+          ansible.builtin.file:
+            path: /usr/lib/systemd/system/gitlab-runsvdir.service
+            state: absent
+          tags: [ remove-unit-file ]
+
+        - name: GitLab uninstall | the systemd daemon is reloaded
+          become: true
+          ansible.builtin.systemd_service:
+            daemon_reload: true
+          tags: [ reload-systemd ]
+
+        - name: GitLab uninstall | the "failed" state of all systemd units is reset
+          become: true
+          ansible.builtin.command: # noqa: command-instead-of-module
+            cmd: systemctl reset-failed
+          tags: [ reset-systemd-unit-failed-state ]
 
     - name: GitLab uninstall | the process supervisor is uninstalled
       become: true
@@ -55,17 +67,23 @@
 
     - name: GitLab uninstall | data is destroyed
       when: gitlab_destroy_data | default(false) | bool
+      tags: [ destroy-data ]
       block:
         - name: GitLab uninstall | all gitlab data is deleted
           become: true
           ansible.builtin.command: gitlab-ctl cleanse
+
+        - name: GitLab uninstall | user accounts are removed
+          become: true
+          ansible.builtin.command:
+            cmd: gitlab-ctl remove-accounts
+          tags: [ remove-accounts ]
 
         - name: GitLab uninstall | the base directory is removed
           become: true
           ansible.builtin.file:
             path: /opt/gitlab
             state: absent
-      tags: [ destroy-data ]
 
     - name: GitLab uninstall | the all-in-one package is removed
       become: true

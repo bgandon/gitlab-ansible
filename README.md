@@ -269,11 +269,17 @@ ansible-playbook playbooks/setup-gitlab.yml --extra-vars @vars/prod.yml
 
 ### Cleanup
 
-You may uninstall GitLab completely:
+You may uninstall GitLab, keeping its data:
 
- ```shell
- ansible-playbook playbooks/uninstall-gitlab.yml
- ```
+```shell
+ansible-playbook playbooks/uninstall-gitlab.yml
+```
+
+And if you need to also erase all GitLab data (be extra careful about that):
+
+```shell
+ansible-playbook playbooks/uninstall-gitlab.yml -e gitlab_destroy_data=true
+```
 
 Or just destroy the guest VM completely:
 
