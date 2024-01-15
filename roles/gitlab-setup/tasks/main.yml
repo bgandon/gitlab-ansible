@@ -4,6 +4,10 @@
   ansible.builtin.import_tasks: runner-prerequisites.yml
   tags: [ gitlab-setup, prerequisites ]
 
+- name: GitLab | app settings are set
+  ansible.builtin.import_tasks: set-app-settings.yml
+  tags: [ gitlab-setup, app-settings ]
+
 - name: GitLab | groups are created
   ansible.builtin.import_tasks: create-groups.yml
   tags: [ gitlab-setup, create-groups ]

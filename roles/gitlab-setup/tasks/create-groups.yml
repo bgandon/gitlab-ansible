@@ -1,6 +1,6 @@
 ---
 
-- name: GitLab | groups are created
+- name: GitLab setup | groups are created
   community.general.gitlab_group:
     name:        "{{ group.name }}"
     path:        "{{ group.full_path | basename }}"

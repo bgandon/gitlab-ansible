@@ -1,0 +1,8 @@
+---
+
+- name: GitLab setup | general application settings are set
+  ansible.builtin.uri:
+    url: "{{ gitlab_external_url }}/api/v4/application/settings?signup_enabled=false"
+    method: PUT
+    headers:
+      PRIVATE-TOKEN: "{{ gitlab_root_api_token }}"
