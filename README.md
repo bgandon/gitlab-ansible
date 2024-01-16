@@ -403,6 +403,11 @@ openssl s_client -connect "idp.safenetid.com:443" <<<"" 2> /dev/null \
 ```
 
 
+### Version bumps
+
+Set `gitlab_version` and re-run the `install-gitlab.yml` playbook.
+
+
 ### Limitations
 
 The resulting GitLab installation is the most simple one. Full-blown,
