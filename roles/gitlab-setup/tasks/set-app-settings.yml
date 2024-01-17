@@ -1,8 +1,15 @@
 ---
 
-- name: GitLab setup | general application settings are set
+- name: GitLab setup | sign-up is disabled
   ansible.builtin.uri:
-    url: "{{ gitlab_external_url }}/api/v4/application/settings?signup_enabled=false"
+    url: "{{ gitlab_external_url }}/api/v4/application/settings?signup_enabled={{ gitlab_signup_enabled }}"
+    method: PUT
+    headers:
+      PRIVATE-TOKEN: "{{ gitlab_root_api_token }}"
+
+- name: GitLab setup | usage statistics, license tracking and version checks are disabled
+  ansible.builtin.uri:
+    url: "{{ gitlab_external_url }}/api/v4/application/settings?usage_ping_enabled={{ gitlab_usage_ping_enabled }}&version_check_enabled={{ gitlab_version_check_enabled }}"
     method: PUT
     headers:
       PRIVATE-TOKEN: "{{ gitlab_root_api_token }}"

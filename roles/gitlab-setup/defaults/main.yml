@@ -1,0 +1,4 @@
+---
+gitlab_signup_enabled: false
+gitlab_usage_ping_enabled: 0
+gitlab_version_check_enabled: 0
