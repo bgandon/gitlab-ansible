@@ -403,9 +403,15 @@ openssl s_client -connect "idp.safenetid.com:443" <<<"" 2> /dev/null \
 ```
 
 
-### Version bumps
+### Version upgrades
 
-Set `gitlab_version` and re-run the `install-gitlab.yml` playbook.
+1. Check the [upgrade path][upgrade_path] first.
+2. Change version in `roles/gitlab/defaults/main.yml` or in `inventory/main.yml`.
+3. Check for any background migrations at the
+   `https://gitlab.example.org/admin/background_migrations` URL of your installation.
+4. Re-run the `install-gitlab.yml` playbook.
+
+[upgrade_path]: https://gitlab-com.gitlab.io/support/toolbox/upgrade-path/
 
 
 ### Limitations
