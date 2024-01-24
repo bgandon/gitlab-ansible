@@ -18,6 +18,7 @@
 # refers in /etc/hosts to both IPv4 127.0.0.1 and IPv6 ::1, but the latter
 # makes Postfix fail to start
 - name: GitLab | Postfix is listening on IPv4 localhost only
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     regexp: ^inet_interfaces\s+=
